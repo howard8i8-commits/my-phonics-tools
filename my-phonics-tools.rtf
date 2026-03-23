@@ -1,0 +1,151 @@
+{\rtf1\ansi\ansicpg950\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="zh-TW">\
+<head>\
+    <meta charset="UTF-8">\
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+    <title>\uc0\u36914 \u21270 \u29256  Phonics \u26827 \u30436 \u29986 \u29983 \u22120 </title>\
+    <script src="https://cdn.tailwindcss.com"></script>\
+    <style>\
+        @media print \{\
+            .no-print \{ display: none; \}\
+            body \{ background: white; \}\
+            .print-area \{ margin: 0; padding: 0; border: none; \}\
+        \}\
+        .vowel-red \{ color: #ef4444; font-weight: bold; \}\
+        .grid-cell \{ aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; \}\
+    </style>\
+</head>\
+<body class="bg-gray-50 p-4 md:p-8">\
+\
+<div class="max-w-5xl mx-auto no-print bg-white p-6 rounded-xl shadow-lg mb-8">\
+    <h1 class="text-2xl font-bold mb-4 text-blue-600">Phonics \uc0\u26827 \u30436 \u29986 \u29983 \u22120  (\u20462 \u27491 \u29256 )</h1>\
+    \
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">\
+        <div class="space-y-4">\
+            <div>\
+                <label class="block font-medium mb-1">\uc0\u36664 \u20837 \u21934 \u23383 \u28165 \u21934  (\u29992 \u31354 \u26684 \u25110 \u36887 \u34399 \u20998 \u38548 )</label>\
+                <textarea id="wordInput" class="w-full h-32 p-2 border rounded shadow-sm focus:ring-2 focus:ring-blue-400 outline-none" placeholder="\uc0\u20363 \u22914 : cat, bat, dog, pig, sun, hat..."></textarea>\
+            </div>\
+            \
+            <div class="flex gap-4">\
+                <div>\
+                    <label class="block font-medium mb-1">\uc0\u21015 \u25976  (Rows)</label>\
+                    <input type="number" id="rows" value="5" min="1" max="10" class="w-20 p-2 border rounded">\
+                </div>\
+                <div>\
+                    <label class="block font-medium mb-1">\uc0\u34892 \u25976  (Cols)</label>\
+                    <input type="number" id="cols" value="5" min="1" max="10" class="w-20 p-2 border rounded">\
+                </div>\
+                <div>\
+                    <label class="block font-medium mb-1">\uc0\u23383 \u39636 \u22823 \u23567 </label>\
+                    <input type="number" id="fontSize" value="32" class="w-24 p-2 border rounded">\
+                </div>\
+            </div>\
+        </div>\
+\
+        <div class="bg-blue-50 p-4 rounded-lg space-y-4">\
+            <h3 class="font-bold text-blue-800">\uc0\u36914 \u38542 \u37007 \u36655 \u35373 \u23450 </h3>\
+            <label class="flex items-center space-x-2 cursor-pointer">\
+                <input type="checkbox" id="shuffleToggle" checked class="w-5 h-5">\
+                <span class="text-gray-700">\uc0\u21855 \u29992 \u12300 \u30495 \u27491 \u38568 \u27231 \u12301 \u27927 \u29260  (Fisher-Yates)</span>\
+            </label>\
+            <label class="flex items-center space-x-2 cursor-pointer">\
+                <input type="checkbox" id="vowelToggle" class="w-5 h-5">\
+                <span class="text-gray-700 font-bold text-red-600">\uc0\u38283 \u21855 \u27597 \u38899 \u27161 \u33394  (a, e, i, o, u)</span>\
+            </label>\
+            <div class="pt-4 flex gap-2">\
+                <button onclick="generate()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-bold shadow-md">\
+                    \uc0\u37325 \u26032 \u29983 \u25104 \u26827 \u30436 \
+                </button>\
+                <button onclick="window.print()" class="px-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-bold">\
+                    \uc0\u21015 \u21360  PDF\
+                </button>\
+            </div>\
+        </div>\
+    </div>\
+</div>\
+\
+<div id="printArea" class="print-area max-w-4xl mx-auto bg-white shadow-xl">\
+    <div id="chessboard" class="grid w-full border-2 border-black">\
+        </div>\
+</div>\
+\
+<script>\
+    function shuffle(array) \{\
+        let currentIndex = array.length, randomIndex;\
+        while (currentIndex != 0) \{\
+            randomIndex = Math.floor(Math.random() * currentIndex);\
+            currentIndex--;\
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];\
+        \}\
+        return array;\
+    \}\
+\
+    function isVowel(char, enabled) \{\
+        if (!enabled) return false;\
+        return /[aeiouAEIOU]/.test(char);\
+    \}\
+\
+    function generate() \{\
+        const input = document.getElementById('wordInput').value;\
+        const rows = parseInt(document.getElementById('rows').value);\
+        const cols = parseInt(document.getElementById('cols').value);\
+        const fontSize = document.getElementById('fontSize').value;\
+        const doShuffle = document.getElementById('shuffleToggle').checked;\
+        const doVowel = document.getElementById('vowelToggle').checked;\
+\
+        let words = input.split(/[\\s,]+/).filter(w => w.trim() !== "");\
+        if (words.length === 0) words = ["Ready", "Set", "Go"];\
+\
+        // \uc0\u38568 \u27231 \u34389 \u29702 \
+        let finalWords = [];\
+        if (doShuffle) \{\
+            // \uc0\u27927 \u29260 \u24460 \u22635 \u20837 \u65292 \u22914 \u26524 \u19981 \u36275 \u21063 \u24490 \u29872 \
+            let shuffled = shuffle([...words]);\
+            for (let i = 0; i < rows * cols; i++) \{\
+                finalWords.push(shuffled[i % shuffled.length]);\
+            \}\
+        \} else \{\
+            for (let i = 0; i < rows * cols; i++) \{\
+                finalWords.push(words[i % words.length]);\
+            \}\
+        \}\
+\
+        const board = document.getElementById('chessboard');\
+        board.style.gridTemplateColumns = `repeat($\{cols\}, 1fr)`;\
+        board.innerHTML = '';\
+\
+        finalWords.forEach((word, index) => \{\
+            const cell = document.createElement('div');\
+            const row = Math.floor(index / cols);\
+            const col = index % cols;\
+            \
+            // \uc0\u35199 \u27915 \u26827 \u20132 \u26367 \u37197 \u33394 \
+            const bgColor = (row + col) % 2 === 0 ? 'bg-white' : 'bg-gray-100';\
+            cell.className = `grid-cell $\{bgColor\} border`;\
+            cell.style.fontSize = `$\{fontSize\}px`;\
+\
+            // \uc0\u34389 \u29702 \u27597 \u38899 \u35722 \u33394 \u65288 \u36880 \u23383 \u20803 \u34389 \u29702 \u25110 \u20840 \u23383 \u34389 \u29702 \u65292 \u36889 \u35041 \u25505 \u36880 \u23383 \u20803 \u65289 \
+            const spannedWord = word.split('').map(char => \{\
+                const colorClass = isVowel(char, doVowel) ? 'vowel-red' : '';\
+                return `<span class="$\{colorClass\}">$\{char\}</span>`;\
+            \}).join('');\
+\
+            cell.innerHTML = spannedWord;\
+            board.appendChild(cell);\
+        \});\
+    \}\
+\
+    // \uc0\u21021 \u22987 \u29983 \u25104 \
+    generate();\
+</script>\
+\
+</body>\
+</html>}
